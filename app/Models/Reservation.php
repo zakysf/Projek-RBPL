@@ -15,8 +15,6 @@ class Reservation extends Model
         'reservation_time',
         'duration',
         'status',
-        'payment_status',
-        'paid_at',
     ];
 
     public function treatment()
@@ -27,5 +25,21 @@ class Reservation extends Model
     public function therapist()
     {
         return $this->belongsTo(Therapist::class);
+    }
+
+    public function payment()
+    {
+        return $this->hasOne(Payment::class);
+    }
+
+    protected static function booted()
+    {
+        static::created(function ($reservation) {
+            $reservation->payment()->create([
+                'amount' => $reservation->treatment->price,
+                'payment_method' => 'cash',
+                'payment_status' => 'unpaid',
+            ]);
+        });
     }
 }
