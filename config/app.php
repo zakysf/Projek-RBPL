@@ -1,126 +1,155 @@
 <?php
+// ============================================================
+// config/app.php - Application Configuration & Global Helpers
+// TEA SPA System
+// ============================================================
 
-return [
+define('APP_NAME',    'Tea Spa');
+define('APP_VERSION', '1.0.0');
+define('BASE_URL',    '/teaspa'); // Change this to match your XAMPP subfolder
 
-    /*
-    |--------------------------------------------------------------------------
-    | Application Name
-    |--------------------------------------------------------------------------
-    |
-    | This value is the name of your application, which will be used when the
-    | framework needs to place the application's name in a notification or
-    | other UI elements where an application name needs to be displayed.
-    |
-    */
+// Role access map: role => allowed module prefixes
+define('ROLE_ACCESS', [
+    'manager'    => ['dashboard','services','reservations','monitoring','therapist','reports','users'],
+    'therapist'  => ['dashboard','monitoring','inventory_usage'],
+    'cashier'    => ['dashboard','payments'],
+    'purchasing' => ['dashboard','inventory'],
+    'accounting' => ['dashboard','reports'],
+]);
 
-    'name' => env('APP_NAME', 'Laravel'),
+// ─── Session ────────────────────────────────────────────────
 
-    /*
-    |--------------------------------------------------------------------------
-    | Application Environment
-    |--------------------------------------------------------------------------
-    |
-    | This value determines the "environment" your application is currently
-    | running in. This may determine how you prefer to configure various
-    | services the application utilizes. Set this in your ".env" file.
-    |
-    */
+function sessionStart(): void {
+    if (session_status() === PHP_SESSION_NONE) {
+        session_name('TEASPA_SESS');
+        session_start();
+    }
+}
 
-    'env' => env('APP_ENV', 'production'),
+function auth(): ?array {
+    sessionStart();
+    return $_SESSION['user'] ?? null;
+}
 
-    /*
-    |--------------------------------------------------------------------------
-    | Application Debug Mode
-    |--------------------------------------------------------------------------
-    |
-    | When your application is in debug mode, detailed error messages with
-    | stack traces will be shown on every error that occurs within your
-    | application. If disabled, a simple generic error page is shown.
-    |
-    */
+function isLoggedIn(): bool {
+    return auth() !== null;
+}
 
-    'debug' => (bool) env('APP_DEBUG', false),
+function currentRole(): string {
+    return auth()['role'] ?? '';
+}
 
-    /*
-    |--------------------------------------------------------------------------
-    | Application URL
-    |--------------------------------------------------------------------------
-    |
-    | This URL is used by the console to properly generate URLs when using
-    | the Artisan command line tool. You should set this to the root of
-    | the application so that it's available within Artisan commands.
-    |
-    */
+function requireLogin(): void {
+    if (!isLoggedIn()) {
+        redirect('login.php');
+    }
+}
 
-    'url' => env('APP_URL', 'http://localhost'),
+function requireRole(array $roles): void {
+    requireLogin();
+    if (!in_array(currentRole(), $roles, true)) {
+        http_response_code(403);
+        include __DIR__ . '/../views/errors/403.php';
+        exit;
+    }
+}
 
-    /*
-    |--------------------------------------------------------------------------
-    | Application Timezone
-    |--------------------------------------------------------------------------
-    |
-    | Here you may specify the default timezone for your application, which
-    | will be used by the PHP date and date-time functions. The timezone
-    | is set to "UTC" by default as it is suitable for most use cases.
-    |
-    */
+// ─── URL & Redirect ─────────────────────────────────────────
 
-    'timezone' => env('APP_TIMEZONE', 'UTC'),
+function redirect(string $path): never {
+    header('Location: ' . BASE_URL . '/' . ltrim($path, '/'));
+    exit;
+}
 
-    /*
-    |--------------------------------------------------------------------------
-    | Application Locale Configuration
-    |--------------------------------------------------------------------------
-    |
-    | The application locale determines the default locale that will be used
-    | by Laravel's translation / localization methods. This option can be
-    | set to any locale for which you plan to have translation strings.
-    |
-    */
+function url(string $path = ''): string {
+    return BASE_URL . '/' . ltrim($path, '/');
+}
 
-    'locale' => env('APP_LOCALE', 'en'),
+// ─── Flash Messages ─────────────────────────────────────────
 
-    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
+function flash(string $key, string $message, string $type = 'success'): void {
+    sessionStart();
+    $_SESSION['flash'][$key] = ['message' => $message, 'type' => $type];
+}
 
-    'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
+function getFlash(string $key): ?array {
+    sessionStart();
+    $msg = $_SESSION['flash'][$key] ?? null;
+    unset($_SESSION['flash'][$key]);
+    return $msg;
+}
 
-    /*
-    |--------------------------------------------------------------------------
-    | Encryption Key
-    |--------------------------------------------------------------------------
-    |
-    | This key is utilized by Laravel's encryption services and should be set
-    | to a random, 32 character string to ensure that all encrypted values
-    | are secure. You should do this prior to deploying the application.
-    |
-    */
+// ─── Input & Security ───────────────────────────────────────
 
-    'cipher' => 'AES-256-CBC',
+function sanitize(mixed $value): string {
+    return htmlspecialchars(trim((string)$value), ENT_QUOTES, 'UTF-8');
+}
 
-    'key' => env('APP_KEY'),
+function post(string $key, mixed $default = ''): mixed {
+    return $_POST[$key] ?? $default;
+}
 
-    'previous_keys' => [
-        ...array_filter(
-            explode(',', env('APP_PREVIOUS_KEYS', ''))
-        ),
-    ],
+function get(string $key, mixed $default = ''): mixed {
+    return $_GET[$key] ?? $default;
+}
 
-    /*
-    |--------------------------------------------------------------------------
-    | Maintenance Mode Driver
-    |--------------------------------------------------------------------------
-    |
-    | These configuration options determine the driver used to determine and
-    | manage Laravel's "maintenance mode" status. The "cache" driver will
-    | allow maintenance mode to be controlled across multiple machines.
-    |
-    | Supported drivers: "file", "cache"
-    |
-    */
+function csrfToken(): string {
+    sessionStart();
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
 
-    'maintenance' => [
-        'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
-        'store' => env('APP_MAINTENANCE_STORE', 'database'),
-    ],
+function csrfField(): string {
+    return '<input type="hidden" name="csrf_token" value="' . csrfToken() . '">';
+}
 
-];
+function verifyCsrf(): void {
+    sessionStart();
+    $token = $_POST['csrf_token'] ?? '';
+    if (!hash_equals($_SESSION['csrf_token'] ?? '', $token)) {
+        http_response_code(403);
+        die('Invalid CSRF token.');
+    }
+}
+
+// ─── Formatting ─────────────────────────────────────────────
+
+function formatRupiah(float $amount): string {
+    return 'Rp ' . number_format($amount, 0, ',', '.');
+}
+
+function formatDate(string $date): string {
+    if (!$date) return '-';
+    return date('d M Y', strtotime($date));
+}
+
+function formatTime(string $time): string {
+    if (!$time) return '-';
+    return substr($time, 0, 5); // HH:MM
+}
+
+function statusBadge(string $status): string {
+    $map = [
+        'Menunggu'    => 'warning',
+        'Proses'      => 'info',
+        'Selesai'     => 'success',
+        'Belum Bayar' => 'danger',
+        'Lunas'       => 'success',
+        'Pending'     => 'warning',
+        'Disetujui'   => 'success',
+        'Ditolak'     => 'danger',
+    ];
+    $color = $map[$status] ?? 'secondary';
+    return "<span class=\"badge bg-{$color}\">{$status}</span>";
+}
+
+// ─── Pagination ─────────────────────────────────────────────
+
+function paginate(int $total, int $perPage, int $page): array {
+    $totalPages = (int)ceil($total / $perPage);
+    $page       = max(1, min($page, $totalPages));
+    $offset     = ($page - 1) * $perPage;
+    return compact('total','perPage','page','totalPages','offset');
+}
