@@ -103,7 +103,7 @@ include __DIR__ . '/../views/layouts/header.php';
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Jumlah Masuk *</label>
-                        <input type="number" name="quantity" class="form-control" min="0.01" step="0.01" required>
+                        <input type="number" name="quantity" class="form-control" min="1" step="1" required>
                     </div>
                     <button type="submit" class="btn-tea w-100"><i class="bi bi-plus-lg"></i> Tambah Stok</button>
                 </form>
@@ -128,11 +128,11 @@ include __DIR__ . '/../views/layouts/header.php';
                     <div class="row">
                         <div class="col-6 mb-3">
                             <label class="form-label">Stok Awal</label>
-                            <input type="number" name="stock" class="form-control" value="0" min="0" step="0.01">
+                            <input type="number" name="stock" class="form-control" value="0" min="0" step="1">
                         </div>
                         <div class="col-6 mb-3">
                             <label class="form-label">Stok Min.</label>
-                            <input type="number" name="min_stock" class="form-control" value="10" min="0" step="0.01">
+                            <input type="number" name="min_stock" class="form-control" value="10" min="0" step="1">
                         </div>
                     </div>
                     <button type="submit" class="btn-outline-tea w-100"><i class="bi bi-plus-lg"></i> Tambah Produk</button>

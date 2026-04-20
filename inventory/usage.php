@@ -137,7 +137,7 @@ include __DIR__ . '/../views/layouts/header.php';
                             </div>
                             <div>
                                 <label class="form-label">Jumlah</label>
-                                <input type="number" name="items[0][quantity]" class="form-control" min="0.01" step="0.01" placeholder="0">
+                                <input type="number" name="items[0][quantity]" class="form-control" min="1" step="1" placeholder="0">
                             </div>
                             <div style="padding-bottom:.1rem">
                                 <button type="button" onclick="this.closest('.usage-item').remove()"
@@ -195,7 +195,7 @@ function addItem() {
         </div>
         <div>
             <label class="form-label">Jumlah</label>
-            <input type="number" name="items[${itemIndex}][quantity]" class="form-control" min="0.01" step="0.01" placeholder="0">
+            <input type="number" name="items[${itemIndex}][quantity]" class="form-control" min="1" step="1" placeholder="0">
         </div>
         <div style="padding-bottom:.1rem">
             <button type="button" onclick="this.closest('.usage-item').remove()"

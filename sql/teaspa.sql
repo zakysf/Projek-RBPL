@@ -185,13 +185,24 @@ INSERT INTO services (name, description, duration, price) VALUES
 ('Facial Treatment',            'Perawatan wajah dengan masker alami',                    60,  200000),
 ('Scrub & Wrap',                'Lulur dan balutan tubuh untuk kulit halus',               90,  280000);
 
+-- -- Default products
+-- INSERT INTO products (name, unit, stock, min_stock) VALUES
+-- ('Minyak Esensial Lavender',   'ml',  500,  100),
+-- ('Scrub Kopi Organik',         'gram',1000, 200),
+-- ('Masker Lumpur',              'gram', 800, 150),
+-- ('Handuk Kecil',               'pcs',  50,  10),
+-- ('Handuk Besar',               'pcs',  30,  10),
+-- ('Minyak Kelapa',              'ml',  600, 100),
+-- ('Garam Himalaya',             'gram', 900, 200),
+-- ('Aromatherapy Oil Mix',       'ml',  400, 100);
+
 -- Default products
 INSERT INTO products (name, unit, stock, min_stock) VALUES
-('Minyak Esensial Lavender',   'ml',  500,  100),
-('Scrub Kopi Organik',         'gram',1000, 200),
-('Masker Lumpur',              'gram', 800, 150),
-('Handuk Kecil',               'pcs',  50,  10),
-('Handuk Besar',               'pcs',  30,  10),
-('Minyak Kelapa',              'ml',  600, 100),
-('Garam Himalaya',             'gram', 900, 200),
-('Aromatherapy Oil Mix',       'ml',  400, 100);
+('Minyak Esensial Lavender (10ml)',   'pcs',  50,  10),
+('Scrub Kopi Organik (100g)',         'pcs', 100,  20),
+('Masker Lumpur (100g)',              'pcs',  80,  15),
+('Handuk Kecil',                      'pcs',  50,  10),
+('Handuk Besar',                      'pcs',  30,  10),
+('Minyak Kelapa (250ml)',             'pcs',  60,  10),
+('Garam Himalaya (200g)',             'pcs',  90,  20),
+('Aromatherapy Oil Mix (15ml)',       'pcs',  40,  10);
