@@ -182,16 +182,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             margin-bottom: 1.25rem;
             display: flex; align-items: center; gap: .5rem;
         }
-        .demo-box {
-            margin-top: 1.5rem;
-            background: var(--tea-light);
-            border-radius: 10px;
-            padding: 1rem 1.2rem;
-        }
-        .demo-box p { font-size: .78rem; color: var(--tea-dark); font-weight: 500; margin-bottom: .5rem; }
-        .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .25rem; }
-        .demo-grid span { font-size: .75rem; color: var(--muted); }
-        .demo-grid b { color: var(--tea-dark); }
         footer {
             text-align: center;
             margin-top: 1.5rem;
@@ -240,15 +230,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </button>
         </form>
 
-        <div class="demo-box">
-            <p>🔑 Demo Credentials (password: <b>password</b>)</p>
-            <div class="demo-grid">
-                <span>Manager:</span>     <span><b>manager</b></span>
-                <span>Terapis:</span>     <span><b>therapist</b></span>
-                <span>Kasir:</span>       <span><b>cashier</b></span>
-                <span>Purchasing:</span>  <span><b>purchasing</b></span>
-                <span>Accounting:</span>  <span><b>accounting</b></span>
-            </div>
+        <div style="text-align:center;margin-top:1.25rem">
+            <a href="<?= url('landing.php') ?>" style="font-size:.82rem;color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:.35rem;transition:color .2s"
+               onmouseover="this.style.color='var(--tea)'" onmouseout="this.style.color='var(--muted)'">
+                <i class="bi bi-arrow-left"></i> Kembali ke halaman utama
+            </a>
         </div>
     </div>
     <footer>© <?= date('Y') ?> Tea Spa — Greenhost Boutique Hotel, Yogyakarta</footer>
